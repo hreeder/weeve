@@ -5,28 +5,22 @@
 		<div class="col-lg-3">
 			<div class="well">
 				{% for character in characters %}
-				<div class="character">
+				<a href="/character/{{ character.id }}">
+				<div class="character{% if character.current_remaining < 24 %} danger{% endif %}">
 					<h5>
 						<img class="char-list-img" src="//image.eveonline.com/Character/{{ character.id }}_50.jpg">
 						{{ character.name }}<br />
-						Logistics V<br />
-						{{ selected.current_remaining }}
+						<small class="char-skill">{{ character.current_skill }} {{ character.current_level|skill() }}</small><br />
+						{{ character.current_remaining }}
 					</h5>
 				</div>
+				</a>
 				{% endfor %}
-				<div class="character danger">
-					<h5>
-						<img class="char-list-img" src="//image.eveonline.com/Character/445518960_50.jpg">
-						Sklullus Dromulus<br />
-						Logistics V<br />
-						24d 3h 54m 46s
-					</h5>
-				</div><br />
 			</div>
 		</div>
 		<div class="col-lg-9">
 			<section id="char-info">
-				<div class="pull-right"><img src="//image.eveonline.com/Character/445518960_128.jpg"></div>
+				<div class="pull-right"><img src="//image.eveonline.com/Character/{{ selected.id }}_128.jpg" id="selected-portrait"></div>
 				<h2>{{ selected.name }}</h2>
 				<h4>{{ selected.corp }}{% if selected.alliance %} / {{ selected.alliance }}{% endif %}</h4>
 				<h5>{{ selected.isk|isk() }} ISK</h5>
@@ -38,6 +32,10 @@
 				  <div class="progress-bar progress-bar-success" style="width:60%;">Logistics V</div>
 				  <div class="progress-bar" style="width: 5%;">Sensor Compensation I</div>
 				</div>
+			</section>
+			<section id="skill-sheet">
+				<h3>Skill Sheet</h3>
+
 			</section>
 		</div>
 	</div>

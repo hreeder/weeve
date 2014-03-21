@@ -16,6 +16,19 @@ def format_currency(value):
 def format_sp(value):
     return "{:,}".format(value)
 
+@app.template_filter('skill')
+def format_skill(value):
+    if value == 1:
+        return "I"
+    elif value == 2:
+        return "II"
+    elif value == 3:
+        return "III"
+    elif value == 4:
+        return "IV"
+    elif value == 5:
+        return "V"
+
 @app.route("/")
 def mainpage():
     characters = []
@@ -37,6 +50,15 @@ def mainpage():
     kline = {}
     kline['id'] = 92029019
     kline['name'] = "Kline Eto"
+    kline['corp'] = "B0rthole"
+    kline['alliance'] = None
+    kline['isk'] = 1000000000.00
+    kline['sp'] = 40000000
+    kline['clone'] = 64000000
+    kline['current_skill'] = "Jump Drive Calibration"
+    kline['current_level'] = 3
+    kline['current_remaining'] = 8
+
     characters.append(kline)
     
     return render_template("index.html", selected=sklullus, characters=characters)
