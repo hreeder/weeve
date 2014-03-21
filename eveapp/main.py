@@ -28,6 +28,9 @@ def mainpage():
     sklullus['isk'] = 2607720370.31
     sklullus['sp'] = 39607624
     sklullus['clone'] = 42200000
+    sklullus['current_skill'] = "Logistics"
+    sklullus['current_level'] = 5
+    sklullus['current_remaining'] = "23d 8h"
 
     characters.append(sklullus)
 

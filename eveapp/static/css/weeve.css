@@ -11,4 +11,11 @@ div.danger {
 	padding: 0.1em;
 	margin: 0.1em;
 	background-color: rgba(255,128,128,128);
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+}
+
+.progress-bar {
+	line-height: 1.32;
 }

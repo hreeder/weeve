@@ -10,9 +10,9 @@
 						<img class="char-list-img" src="//image.eveonline.com/Character/{{ character.id }}_50.jpg">
 						{{ character.name }}<br />
 						Logistics V<br />
-						24d 3h 54m 46s
+						{{ selected.current_remaining }}
 					</h5>
-				</div><br />
+				</div>
 				{% endfor %}
 				<div class="character danger">
 					<h5>
@@ -28,7 +28,7 @@
 			<section id="char-info">
 				<div class="pull-right"><img src="//image.eveonline.com/Character/445518960_128.jpg"></div>
 				<h2>{{ selected.name }}</h2>
-				<h4>{{ selected.corp }} / {{ selected.alliance }}</h4>
+				<h4>{{ selected.corp }}{% if selected.alliance %} / {{ selected.alliance }}{% endif %}</h4>
 				<h5>{{ selected.isk|isk() }} ISK</h5>
 				<h5>{{ selected.sp|sp() }} SP / {{ selected.clone|sp() }} SP</h5>
 			</section>
@@ -36,7 +36,7 @@
 				<h3>Skill Queue</h3>
 				<div class="progress">
 				  <div class="progress-bar progress-bar-success" style="width:60%;">Logistics V</div>
-				  <div class="progress-bar" style="width: 20%;">Sensor Compensation I</div>
+				  <div class="progress-bar" style="width: 5%;">Sensor Compensation I</div>
 				</div>
 			</section>
 		</div>

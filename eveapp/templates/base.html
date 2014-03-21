@@ -3,15 +3,14 @@
 		{% block head %}
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/weeve.css') }}" />
-		<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css">
+		<script src="https://code.jquery.com/jquery-2.1.0.min.js"></script>
+		<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 
 		<title>{% block title %}{% endblock %} | Weeve</title>
-		<style type="text/css">
-
-		</style>
 		{% endblock %}
 	</head>
-<body style class>
+<body>
 <div class="navbar navbar-default navbar-fixed-top">
 	<div class="container">
 		<div class="navbar-header">
