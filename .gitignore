@@ -17,3 +17,6 @@ var/
 
 config.json
 config.py
+
+tmp/
+app.db
