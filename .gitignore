@@ -16,3 +16,4 @@ var/
 *.egg
 
 config.json
+config.py
