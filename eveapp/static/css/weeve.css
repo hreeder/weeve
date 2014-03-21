@@ -1,0 +1,14 @@
+#main {
+	padding-top: 55px;
+}
+
+.char-list-img {
+	float: left;
+	padding-right: 5px;
+}
+
+div.danger {
+	padding: 0.1em;
+	margin: 0.1em;
+	background-color: rgba(255,128,128,128);
+}

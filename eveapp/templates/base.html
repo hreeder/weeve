@@ -1,0 +1,39 @@
+<html>
+	<head>
+		{% block head %}
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/weeve.css') }}" />
+		<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+
+		<title>{% block title %}{% endblock %} | Weeve</title>
+		<style type="text/css">
+
+		</style>
+		{% endblock %}
+	</head>
+<body style class>
+<div class="navbar navbar-default navbar-fixed-top">
+	<div class="container">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="/">Weeve</a>
+			<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar-main">
+			<ul class="nav navbar-nav">
+				<li><a href="#">Home</a></li>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="#">Logged In As: </a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+<div class="container" id="main">
+{% block main %}{% endblock %}
+</div>
+</body>
+</html>
