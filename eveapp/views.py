@@ -39,7 +39,7 @@ def index():
                 'clone' : csheet['clone']['skillpoints'],
                 'current_skill' : ctrain['type_id'],
                 'current_level' : ctrain['level'],
-                'current_remaining' : ctrain['end_ts']
+                'current_finishes' : ctrain['end_ts']
             })
 
     return render_template("index.html", characters=characters, selected=characters[0])

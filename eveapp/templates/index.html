@@ -6,12 +6,12 @@
 			<div class="well">
 				{% for character in characters %}
 				<a href="/character/{{ character.id }}">
-				<div class="character{% if character.current_remaining < 3600 %} danger{% endif %}">
+				<div class="character{% if character.current_finishes < 3600 %} danger{% endif %}">
 					<h5>
 						<img class="char-list-img" src="//image.eveonline.com/Character/{{ character.id }}_50.jpg">
 						<span class="charname">{{ character.name }}</span><br />
 						<small class="char-skill">{% if character.current_skill %}{{ character.current_skill|itemname() }} {{ character.current_level|skill() }}{% else %}{% endif %}</small><br />
-						{% if character.current_skill %}{{ character.current_remaining|timeuntil() }}{% else %}No Skill In Training{% endif %}
+						{% if character.current_skill %}<span class="countdown">{{ character.current_finishes|timeuntil() }}</span>{% else %}No Skill In Training{% endif %}
 					</h5>
 				</div>
 				</a>
