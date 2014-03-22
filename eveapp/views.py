@@ -1,7 +1,7 @@
 from eveapp import app, lm, db, oid
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
-from forms import LoginForm, AddAPIForm
+from forms import LoginForm, AddAPIForm, ChangeProfileForm
 from models import User, Key, ROLE_USER, ROLE_ADMIN
 import evelink
 
@@ -15,39 +15,57 @@ def before_request():
 
 @app.route("/")
 @app.route("/index")
+@app.route("/character/<charid>")
 @login_required
-def index():
+def index(charid=0):
     user = g.user
     keys = user.get_keys()
     characters = []
-    
-    for key in keys:
-        api = evelink.api.API(api_key=(key.id, key.vcode))
-        acc = evelink.account.Account(api=api)
-        chars = acc.characters().result
-        for char in chars:
-            character = evelink.char.Char(api=api, char_id=char)
-            csheet = character.character_sheet().result
-            ctrain = character.current_training().result
-            characters.append({
-                'id' : char,
-                'name' : csheet['name'],
-                'corp' : csheet['corp']['name'],
-                'alliance' : csheet['alliance']['name'],
-                'isk' : csheet['balance'],
-                'sp' : csheet['skillpoints'],
-                'clone' : csheet['clone']['skillpoints'],
-                'current_skill' : ctrain['type_id'],
-                'current_level' : ctrain['level'],
-                'current_finishes' : ctrain['end_ts']
-            })
+    selected = None
+    if keys:
+        for key in keys:
+            api = evelink.api.API(api_key=(key.id, key.vcode))
+            acc = evelink.account.Account(api=api)
+            chars = acc.characters().result
+            training = False
+            for char in chars:
+                character = evelink.char.Char(api=api, char_id=char)
+                csheet = character.character_sheet().result
+                ctrain = character.current_training().result
+                if ctrain['type_id']:
+                    training = True
+                characters.append({
+                    'id' : char,
+                    'name' : csheet['name'],
+                    'corp' : csheet['corp']['name'],
+                    'alliance' : csheet['alliance']['name'],
+                    'isk' : csheet['balance'],
+                    'sp' : csheet['skillpoints'],
+                    'clone' : csheet['clone']['skillpoints'],
+                    'current_skill' : ctrain['type_id'],
+                    'current_level' : ctrain['level'],
+                    'current_finishes' : ctrain['end_ts'],
+                    'skills' : csheet['skills']
+                })
+        selected = characters[0]
+        found = False
+        if charid:
+            for character in characters:
+                if int(character['id']) == int(charid):
+                    selected = character
+                    found = True
+            if not found:
+                flash('Unable to select the specified character. If you believe this to be in error, please contact an administrator.')
+    else:
+        flash('You do not currently have any API keys in Weeve. Please add these on your profile.')
 
-    return render_template("index.html", characters=characters, selected=characters[0])
+    return render_template("index.html", characters=characters, selected=selected)
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     new_api = AddAPIForm()
+    change = ChangeProfileForm()
     if new_api.validate_on_submit():
         try:
             key = Key.query.filter_by(id=new_api.userid.data).first()
@@ -63,6 +81,11 @@ def profile():
         except OverflowError, e:
             flash('That caused an error. Please try a valid API again.')
             return redirect(url_for('profile'))
+    if change.validate_on_submit():
+        current = User.query.filter_by(id=g.user.get_id()).first()
+        current.nickname = change.nickname.data
+        db.session.add(current)
+        db.session.commit()
     keys = Key.query.filter_by(user_id=g.user.get_id())
     characters = {}
     for key in keys:
@@ -76,7 +99,7 @@ def profile():
             characters[key.id] = ', '.join(characters[key.id])
         except evelink.api.APIError, e:
             characters[key.id] = e
-    return render_template("profile.html", new_api=new_api, keys=keys, characters=characters)
+    return render_template("profile.html", new_api=new_api, keys=keys, characters=characters, change_profile=change)
 
 @app.route('/key/delete/<keyid>')
 @login_required

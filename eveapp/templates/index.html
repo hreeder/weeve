@@ -25,20 +25,31 @@
 				<h2>{{ selected.name }}</h2>
 				<h4>{{ selected.corp }}{% if selected.alliance %} / {{ selected.alliance }}{% endif %}</h4>
 				<h5>{{ selected.isk|isk() }} ISK</h5>
-				<h5>{{ selected.sp|sp() }} SP / {{ selected.clone|sp() }} SP</h5>
+				<h5><span class="tippy" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Current SP">{{ selected.sp|sp() }} SP</span> / <span class="tippy" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Current Clone">{{ selected.clone|sp() }} SP</span></h5>
 			</section>
 			<section id="skill-queue">
 				<h3>Skill Queue</h3>
 				<div class="progress">
-				  <div class="progress-bar progress-bar-success" style="width:60%;">Logistics V</div>
-				  <div class="progress-bar" style="width: 5%;">Sensor Compensation I</div>
+				  <div class="progress-bar progress-bar-success" style="width:100%;">{{ selected.current_skill|itemname()}} {{ selected.current_level|skill() }}</div>
 				</div>
 			</section>
 			<section id="skill-sheet">
 				<h3>Skill Sheet</h3>
-
+				{% for skill in selected.skills %}
+					{% if skill.published %}
+						{{ skill.id|itemname() }} {{ skill.level|skill() }}<br />
+					{% endif %}
+				{% endfor %}
 			</section>
 		{% endif %}
 		</div>
 	</div>
+{% endblock %}
+
+{% block endjs %}
+<script>
+$(document).ready(function() {
+	$('.tippy').tooltip();
+});
+</script>
 {% endblock %}

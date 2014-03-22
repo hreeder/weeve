@@ -57,12 +57,16 @@
 		{% endfor %}
 	{% endif %}
 {% endwith %}
+
 {% block main %}{% endblock %}
+
 </div>
 <hr>
 <footer class="footer container"><small>
 	<p>Weeve by <a href="https://gate.eveonline.com/Profile/Sklullus%20Dromulus">Sklullus</a></p>
-	<p><a href="https://github.com/hreeder/weeve"><img src="{{url_for('static', filename='img/GitHub-Mark-32px.png') }}" title="Weeve on GitHub" alt="Weeve on GitHub"/></a></p>
+	<p><a href="https://github.com/hreeder/weeve"><img src="{{url_for('static', filename='img/GitHub-Mark-32px.png') }}" title="Weeve on GitHub" alt="Weeve on GitHub"/></a> <a href="http://chat.mibbit.com/?channel=%23weeve&server=irc.coldfront.net">IRC (Mibbit)</a></p>
 </small></footer>
+
+{% block endjs %}{% endblock %}
 </body>
 </html>
