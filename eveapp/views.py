@@ -98,9 +98,10 @@ def del_key(keyid):
 @login_required
 def user(id):
     user = User.query.filter_by(id=id).first()
-    if g.user is not None and g.user.is_authenticated() and g.user.role == ROLE_ADMIN:
+    if g.user.role == ROLE_ADMIN:
+        print user
         if user == None:
-            flash('User %s not found.' % (email))
+            flash('User %s not found.' % (id))
             return redirect(url_for('index'))
         return render_template('user.html', user=user)
     else:
@@ -117,6 +118,22 @@ def login():
         session['remember_me'] = form.remember_me.data
         return oid.try_login(form.openid.data, ask_for = ['nickname', 'email'])
     return render_template('login.html', form = form, providers = app.config['OPENID_PROVIDERS'])
+
+@app.route("/admin")
+@login_required
+def show_admin_panel():
+    if g.user.role == ROLE_ADMIN:
+        return render_template('admin.html')
+    else:
+        flash('You are not an administrator.')
+        return redirect(url_for('index'))
+
+@app.route("/admin/users")
+@login_required
+def show_admin_users():
+    if g.user.role == ROLE_ADMIN:
+        users = User.query.all()
+        return render_template("users.html", accounts=users)
 
 @oid.after_login
 def after_login(resp):

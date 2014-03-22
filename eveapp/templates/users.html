@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}User List | Admin{% endblock %}
+
+{% block main %}
+<div class="row">
+<h1>User List - Weeve Administration</h1>
+	<table class="table">
+		<thead>
+			<tr>
+				<td>ID</td>
+				<td>Nickname</td>
+				<td>Email</td>
+				<td>Number of Keys</td>
+				<td>Role</td>
+				<td>Actions</td>
+		</thead>
+		<tbody>
+			{% for account in accounts %}
+				<tr>
+					<td>{{ account.id }}</td>
+					<td>{{ account.nickname }}</td>
+					<td>{{ account.email }}</td>
+					<td>{{ account.get_keys()|length }}</td>
+					<td>{% if account.role %}Administrator{% else %}User{% endif %}</td>
+					<td><a href="/user/{{ account.id }}" class="btn btn-xs btn-primary">Profile</a></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Admin{% endblock %}
+
+{% block main %}
+<div class="row">
+<h1>Weeve Administration</h1>
+	<div class="col-md-6">
+		<div class="panel panel-default">
+			<div class="panel-heading"><h3 class="panel-title">Stats</h3></div>
+			<div class="panel-body">
+				
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="panel panel-default">
+			<div class="panel-heading"><h3 class="panel-title">Users</h3></div>
+			<div class="panel-body">
+				<a href="/admin/users" class="btn btn-primary">List Users</a>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
