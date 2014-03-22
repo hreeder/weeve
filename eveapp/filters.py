@@ -30,10 +30,31 @@ def format_item(value):
 
 @app.template_filter('timeuntil')
 def format_until(value):
-    finish = datetime.datetime.fromtimestamp(value)
+    finish = datetime.datetime.utcfromtimestamp(value)
     now = datetime.datetime.utcnow()
     diff = finish - now
-    return str(diff)#.strftime('%dd %Hh %Mm %Ss')
+    out = []
+
+    if diff.days:
+        out.append("%sd" % (diff.days))
+
+    # Calc number of hours
+    h = diff.seconds // 3600
+    if h:
+        out.append("%dh" % (int(h)))
+    # Take that number of hours away from our seconds
+    s = diff.seconds - (h*3600)
+    # calc number of minutes
+    m = s // 60
+    if m:
+        out.append("%dm" % (int(m)))
+    # Take that number of minutes away from our seconds
+    s = s - (m*60)
+    # Append the remainder
+    if s:
+        out.append("%ds" % (int(s)))
+    # Join the list together for nice formatting
+    return " ".join(out)
 
 @app.template_filter('currenttime')
 def format_time(value):
