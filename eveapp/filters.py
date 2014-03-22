@@ -1,4 +1,6 @@
-from eveapp import app
+from eveapp import app, db
+import time
+import datetime
 
 @app.template_filter('isk')
 def format_currency(value):
@@ -20,3 +22,14 @@ def format_skill(value):
         return "IV"
     elif value == 5:
         return "V"
+
+@app.template_filter('itemname')
+def format_item(value):
+    item = db.engine.execute("SELECT typeName FROM invTypes WHERE typeID = %s" % (value,)).first()
+    return item[0]
+
+@app.template_filter('timeuntil')
+def format_until(value):
+    now = time.time()
+    diff = value - now
+    return datetime.datetime.fromtimestamp(diff).strftime('%dd %Hh %Mm %Ss')
