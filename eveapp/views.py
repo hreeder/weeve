@@ -2,7 +2,8 @@ from eveapp import app, lm, db, oid
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from forms import LoginForm, AddAPIForm
-from models import User, ROLE_USER, ROLE_ADMIN
+from models import User, Key, ROLE_USER, ROLE_ADMIN
+import evelink
 
 @lm.user_loader
 def load_user(id):
@@ -17,48 +18,86 @@ def before_request():
 @login_required
 def index():
     user = g.user
+    keys = user.get_keys()
     characters = []
-
-    sklullus = {}
-    sklullus['id'] = 445518960
-    sklullus['name'] = "Sklullus Dromulus"
-    sklullus['corp'] = "Sniggerdly"
-    sklullus['alliance'] = "Pandemic Legion"
-    sklullus['isk'] = 2607720370.31
-    sklullus['sp'] = 39607624
-    sklullus['clone'] = 42200000
-    sklullus['current_skill'] = "Logistics"
-    sklullus['current_level'] = 5
-    sklullus['current_remaining'] = "23d 8h"
-
-    characters.append(sklullus)
-
-    kline = {}
-    kline['id'] = 92029019
-    kline['name'] = "Kline Eto"
-    kline['corp'] = "B0rthole"
-    kline['alliance'] = None
-    kline['isk'] = 1000000000.00
-    kline['sp'] = 40000000
-    kline['clone'] = 64000000
-    kline['current_skill'] = "Jump Drive Calibration"
-    kline['current_level'] = 3
-    kline['current_remaining'] = 8
-
-    characters.append(kline)
     
-    return render_template("index.html", selected=sklullus, characters=characters)
+    for key in keys:
+        api = evelink.api.API(api_key=(key.id, key.vcode))
+        acc = evelink.account.Account(api=api)
+        chars = acc.characters().result
+        for char in chars:
+            character = evelink.char.Char(api=api, char_id=char)
+            csheet = character.character_sheet().result
+            ctrain = character.current_training().result
+            characters.append({
+                'id' : char,
+                'name' : csheet['name'],
+                'corp' : csheet['corp']['name'],
+                'alliance' : csheet['alliance']['name'],
+                'isk' : csheet['balance'],
+                'sp' : csheet['skillpoints'],
+                'clone' : csheet['clone']['skillpoints'],
+                'current_skill' : ctrain['type_id'],
+                'current_level' : ctrain['level'],
+                'current_remaining' : ctrain['end_ts']
+            })
 
-@app.route('/profile')
+    return render_template("index.html", characters=characters, selected=characters[0])
+
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     new_api = AddAPIForm()
-    return render_template("profile.html", new_api=new_api)
+    if new_api.validate_on_submit():
+        try:
+            key = Key.query.filter_by(id=new_api.userid.data).first()
+            if key is None:
+                uid = new_api.userid.data
+                vco = new_api.vcode.data
+                key = Key(id=uid, vcode=vco, user_id=g.user.get_id())
+                db.session.add(key)
+                db.session.commit()
+                flash('Key %d added' % (uid,), 'success')
+            else:
+                flash('That key (%d) already exists!' % (new_api.userid.data,))
+        except OverflowError, e:
+            flash('That caused an error. Please try a valid API again.')
+            return redirect(url_for('profile'))
+    keys = Key.query.filter_by(user_id=g.user.get_id())
+    characters = {}
+    for key in keys:
+        try:
+            api = evelink.api.API(api_key=(key.id, key.vcode))
+            acc = evelink.account.Account(api=api)
+            chars = acc.characters().result
+            characters[key.id] = []
+            for char in chars:
+                characters[key.id].append(chars[char]['name'])
+            characters[key.id] = ', '.join(characters[key.id])
+        except evelink.api.APIError, e:
+            characters[key.id] = e
+    return render_template("profile.html", new_api=new_api, keys=keys, characters=characters)
 
-@app.route('/user/<email>')
+@app.route('/key/delete/<keyid>')
 @login_required
-def user(email):
-    user = User.query.filter_by(email=email).first()
+def del_key(keyid):
+    key = Key.query.filter_by(id=keyid).first()
+    if key:
+        if key.get_owner()==g.user.get_id():
+            db.session.delete(key)
+            db.session.commit()
+            return redirect(url_for('profile'))
+        else:
+            flash("You are unable to remove that key as it does not belong to you. Please contact an Administrator if you believe this is in error.")
+            return redirect(url_for('profile'))
+    else:
+        flash("That key does not exist")
+        return redirect(url_for('profile'))
+
+@app.route('/user/<id>')
+@login_required
+def user(id):
+    user = User.query.filter_by(id=id).first()
     if g.user is not None and g.user.is_authenticated() and g.user.role == ROLE_ADMIN:
         if user == None:
             flash('User %s not found.' % (email))
@@ -68,7 +107,7 @@ def user(email):
         flash('You are not allowed to access the page of another user')
         return redirect(url_for('index'))
 
-@app.route("/login", methods = ['GET', 'POST'])
+@app.route("/login", methods=['GET', 'POST'])
 @oid.loginhandler
 def login():
     if g.user is not None and g.user.is_authenticated():

@@ -23,14 +23,17 @@
 		</div>
 		<div class="navbar-collapse collapse" id="navbar-main">
 			<ul class="nav navbar-nav">
-				<li><a href="#">Home</a></li>
+				<li><a href="/">Home</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				{% if g.user.is_authenticated() %}
+				{% if g.user.role %}
+				<li><a href="#">Admin</a></li>
+				{% endif %}
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Hello, {{ g.user.nickname }} <b class="caret"></b></a>
 					<ul class="dropdown-menu">
-						<li><a href="#">Profile</a></li>
+						<li><a href="/profile">Profile</a></li>
 						<li class="divider"></li>
 						<li><a href="/logout">Log Out</a></li>
 					</ul>
