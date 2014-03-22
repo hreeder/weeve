@@ -30,6 +30,11 @@ def format_item(value):
 
 @app.template_filter('timeuntil')
 def format_until(value):
-    now = time.time()
-    diff = value - now
-    return datetime.datetime.fromtimestamp(diff).strftime('%dd %Hh %Mm %Ss')
+    finish = datetime.datetime.fromtimestamp(value)
+    now = datetime.datetime.utcnow()
+    diff = finish - now
+    return str(diff)#.strftime('%dd %Hh %Mm %Ss')
+
+@app.template_filter('currenttime')
+def format_time(value):
+    return datetime.datetime.utcnow().strftime("%H:%M")
