@@ -11,6 +11,7 @@
 	<li><b>Nickname</b>: {{ g.user.nickname }}</li>
 	<li><b>Email</b>: {{ g.user.email }}</li>
 	{% if g.user.role %}<li><b>Administrator</b></li>{% endif %}
+  <a href="#" data-toggle="modal" data-target="#change-nickname">Change Details</a>
 </ul>
 </section>
 
@@ -39,11 +40,6 @@
 </table>
 <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add-api-key">Add Key</a>
 
-{% for error in new_api.errors %}<br />
-<span class="label label-danger">There was an error in your {{error}} when you entered that key. You should probably look to fixing that.</span>
-{% endfor %}
-</section>
-
 <div class="modal fade" id="add-api-key" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
   <form class="form-horizontal" method="POST" action="">
@@ -70,6 +66,32 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         <input type="submit" class="btn btn-primary" value="Add Key"></input>
+      </div>
+    </div>
+  </form>
+  </div>
+</div>
+
+<div class="modal fade" id="change-nickname" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+  <form class="form-horizontal" method="POST" action="">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Change Nickname</h4>
+      </div>
+      <div class="modal-body">
+      {{change_profile.hidden_tag()}}
+      <div class="form-group">
+        <label for="in-userid" class="col-lg-2 control-label">Nickname</label>
+        <div class="col-lg-10">
+          {{ change_profile.nickname(class="form-control", value=g.user.nickname) }}
+        </div>
+      </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <input type="submit" class="btn btn-primary" value="Change Profile"></input>
       </div>
     </div>
   </form>

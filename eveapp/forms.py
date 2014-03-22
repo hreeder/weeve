@@ -9,3 +9,6 @@ class LoginForm(Form):
 class AddAPIForm(Form):
 	userid = IntegerField('userid', validators=[Required()])
 	vcode = TextField('vcode', validators=[Required()])
+
+class ChangeProfileForm(Form):
+	nickname = TextField('nick', validators=[Required()])
