@@ -30,7 +30,13 @@
 			<section id="skill-queue">
 				<h3>Skill Queue</h3>
 				<div class="progress">
-				  {% if selected.current_skill %}<div class="progress-bar progress-bar-success" style="width:100%;">{{ selected.current_skill|itemname()}} {{ selected.current_level|skill() }}</div>{% else %}<div class="progress-bar progress-bar-danger" style="width:100%;">Empty</div>{% endif %}
+				  {% if selected.current_skill %}
+				      {% for skill in selected.queue %}
+				          <div class="progress-bar progress-bar-{% if skill.position==0 %}success{% elif skill.position % 2 == 0 %}primary{% else %}info{% endif %} tippy" style="width:{{ (skill.end_ts-skill.start_ts)/selected.queue_len*100 }}%;" data-placement="bottom" data-original-title="{{ skill.type_id|itemname() }} {{ skill.level|skill() }} - Finishes {{ skill.end_ts|time() }}">{{ skill.type_id|itemname()}} {{ skill.level|skill() }}</div>
+				      {% endfor %}
+				  {% else %}
+				  <div class="progress-bar progress-bar-danger" style="width:100%;">Empty</div>
+				  {% endif %}
 				</div>
 			</section>
 			<section id="skill-sheet">

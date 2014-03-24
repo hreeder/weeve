@@ -39,6 +39,11 @@ def index(charid=0):
                 character = evelink.char.Char(api=api, char_id=char)
                 csheet = character.character_sheet().result
                 ctrain = character.current_training().result
+                cqueue = character.skill_queue().result
+                queue_total = 0
+                if ctrain['end_ts']:
+                    for item in cqueue:
+                        queue_total += (item['end_ts'] - item['start_ts']) 
                 if ctrain['end_ts'] and int(ctrain['end_ts']) < int(datetime.datetime.utcnow().strftime('%s'))+86400000000:
                     training = True
                 characters.append({
@@ -53,7 +58,9 @@ def index(charid=0):
                     'current_skill' : ctrain['type_id'],
                     'current_level' : ctrain['level'],
                     'current_finishes' : ctrain['end_ts'],
-                    'skills' : csheet['skills']
+                    'skills' : csheet['skills'],
+                    'queue' : cqueue,
+                    'queue_len' : queue_total
                 })
             for character in characters:
                 if training and character['keyid']==key:
@@ -66,6 +73,7 @@ def index(charid=0):
             for character in characters:
                 if int(character['id']) == int(charid):
                     selected = character
+                    
                     found = True
             if not found:
                 flash('Unable to select the specified character. If you believe this to be in error, please contact an administrator.')
@@ -91,7 +99,7 @@ def index(charid=0):
         sortedtree = sorted(stree.itervalues(), key=operator.itemgetter('name'))
     else:
         flash('You do not currently have any API keys in Weeve. Please add these on your profile.')
-
+    print selected
     return render_template("index.html", characters=characters, selected=selected, skilltree=sortedtree)
 
 @app.route('/profile', methods=['GET', 'POST'])
@@ -105,6 +113,19 @@ def profile():
             if key is None:
                 uid = new_api.userid.data
                 vco = new_api.vcode.data
+                apikey=(uid, vco)
+                api = evelink.api.API(api_key=apikey)
+                try:
+                    acc = evelink.account.Account(api=api)
+                    chars = acc.characters()
+                    for char in chars:
+                        character = evelink.char.Char(api=api, char_id=char)
+                        csheet = character.character_sheet()
+                        ctrain = character.current_training()
+                        cqueue = character.skill_queue()
+                except evelink.api.APIError, e:
+                    flash('That key does not meet Weeve access requirements. Please re-create a NEW key with the access requirements specified in the dialog')
+                    return redirect(url_for('profile'))
                 key = Key(id=uid, vcode=vco, user_id=g.user.get_id())
                 db.session.add(key)
                 db.session.commit()

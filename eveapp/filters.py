@@ -39,6 +39,11 @@ def format_item(value):
     item = db.engine.execute("SELECT typeName FROM invTypes WHERE typeID = %s" % (value,)).first()
     return item[0]
 
+@app.template_filter('time')
+def format_time(value):
+    time = datetime.datetime.utcfromtimestamp(value)
+    return time.strftime("%a %d %b - %H:%M EvE")
+
 @app.template_filter('timeuntil')
 def format_until(value):
     finish = datetime.datetime.utcfromtimestamp(value)
