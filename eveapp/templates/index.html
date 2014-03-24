@@ -30,7 +30,7 @@
 			<section id="skill-queue">
 				<h3>Skill Queue</h3>
 				<div class="progress">
-				  {% if selected.current_skill %}<div class="progress-bar progress-bar-success" style="width:100%;">{{ selected.current_skill|itemname()}} {{ selected.current_level|skill() }}</div>{% endif %}
+				  {% if selected.current_skill %}<div class="progress-bar progress-bar-success" style="width:100%;">{{ selected.current_skill|itemname()}} {{ selected.current_level|skill() }}</div>{% else %}<div class="progress-bar progress-bar-danger" style="width:100%;">Empty</div>{% endif %}
 				</div>
 			</section>
 			<section id="skill-sheet">
