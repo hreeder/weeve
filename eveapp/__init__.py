@@ -27,4 +27,7 @@ lm.login_view = 'login'
 oid = OpenID(app, os.path.join(basedir, 'tmp'))
 celery = make_celery(app)
 
-from eveapp import views, filters, models, tasks
+from eveapp import views
+from eveapp import filters
+from eveapp import models
+from eveapp import tasks
