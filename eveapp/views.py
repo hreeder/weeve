@@ -106,7 +106,7 @@ def profile():
 def del_key(keyid):
     key = Key.query.filter_by(id=keyid).first()
     if key:
-        if key.get_owner()==g.user.get_id():
+        if key.get_owner().id==g.user.id:
             db.session.delete(key)
             db.session.commit()
             return redirect(url_for('profile'))
@@ -122,11 +122,21 @@ def del_key(keyid):
 def user(id):
     user = User.query.filter_by(id=id).first()
     if g.user.role == ROLE_ADMIN:
-        print user
         if user == None:
             flash('User %s not found.' % (id))
             return redirect(url_for('index'))
-        return render_template('user.html', user=user)
+        keys = Key.query.filter_by(user_id=id).all()
+        characters = []
+        for key in keys:
+            try:
+                api = evelink.api.API(api_key=(key.id, key.vcode))
+                acc = evelink.account.Account(api=api)
+                chars = acc.characters().result
+                for char in chars:
+                    characters.append(chars[char]['name'])
+            except evelink.api.APIError, e:
+                characters.append(e)
+        return render_template('user.html', user=user, characters=characters)
     else:
         flash('You are not allowed to access the page of another user')
         return redirect(url_for('index'))

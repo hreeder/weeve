@@ -8,5 +8,11 @@
 <ul>
 <li>Email: {{ user.email }}</li>
 </ul>
+<h4>Characters</h4>
+<ul>
+{% for character in characters %}
+<li>{{ character }}</li>
+{% endfor %}
+</ul>
 
 {% endblock %}

@@ -12,7 +12,9 @@ def format_sp(value):
 
 @app.template_filter('skill')
 def format_skill(value):
-    if value == 1:
+    if value == "0":
+        return "0"
+    elif value == 1:
         return "I"
     elif value == 2:
         return "II"
@@ -25,6 +27,8 @@ def format_skill(value):
 
 @app.template_filter('itemname')
 def format_item(value):
+    if value == None:
+        return "None"
     item = db.engine.execute("SELECT typeName FROM invTypes WHERE typeID = %s" % (value,)).first()
     return item[0]
 
