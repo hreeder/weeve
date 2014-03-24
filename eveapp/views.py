@@ -3,7 +3,11 @@ from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from forms import LoginForm, AddAPIForm, ChangeProfileForm
 from models import User, Key, ROLE_USER, ROLE_ADMIN
+
 import evelink
+import datetime
+from collections import defaultdict
+import operator
 
 @lm.user_loader
 def load_user(id):
@@ -22,6 +26,8 @@ def index(charid=0):
     keys = user.get_keys()
     characters = []
     selected = None
+    eve = evelink.eve.EVE()
+    tree = eve.skill_tree().result
     if keys:
         for key in keys:
             api = evelink.api.API(api_key=(key.id, key.vcode))
@@ -32,10 +38,11 @@ def index(charid=0):
                 character = evelink.char.Char(api=api, char_id=char)
                 csheet = character.character_sheet().result
                 ctrain = character.current_training().result
-                if ctrain['type_id']:
+                if ctrain['end_ts'] and int(ctrain['end_ts']) < int(datetime.datetime.utcnow().strftime('%s'))+86400000000:
                     training = True
                 characters.append({
                     'id' : char,
+                    'keyid' : key,
                     'name' : csheet['name'],
                     'corp' : csheet['corp']['name'],
                     'alliance' : csheet['alliance']['name'],
@@ -47,6 +54,11 @@ def index(charid=0):
                     'current_finishes' : ctrain['end_ts'],
                     'skills' : csheet['skills']
                 })
+            for character in characters:
+                if training and character['keyid']==key:
+                    character['training'] = training
+                    
+                
         selected = characters[0]
         found = False
         if charid:
@@ -56,10 +68,29 @@ def index(charid=0):
                     found = True
             if not found:
                 flash('Unable to select the specified character. If you believe this to be in error, please contact an administrator.')
+        stree = defaultdict(dict)
+        for group in tree:
+            stree[group]['name'] = tree[group]['name']
+            stree[group]['id'] = group
+            stree[group]['show'] = False
+            stree[group]['skills'] = defaultdict(dict)
+            stree[group]['count'] = 0
+            stree[group]['sp'] = 0
+            for skill in tree[group]['skills']:
+                selected_skill = next((item for item in selected['skills'] if item['id'] == skill),None)
+                if selected_skill:
+                    stree[group]['show'] = True
+                    stree[group]['skills'][skill] = tree[group]['skills'][skill]
+                    stree[group]['skills'][skill]['level'] = selected_skill['level']
+                    stree[group]['skills'][skill]['sp'] = selected_skill['skillpoints']
+                    stree[group]['sp'] += selected_skill['skillpoints']
+                    stree[group]['count'] += 1
+            stree[group]['skills'] = sorted(stree[group]['skills'].itervalues(), key=operator.itemgetter('name'))
     else:
         flash('You do not currently have any API keys in Weeve. Please add these on your profile.')
 
-    return render_template("index.html", characters=characters, selected=selected)
+    sortedtree = sorted(stree.itervalues(), key=operator.itemgetter('name'))
+    return render_template("index.html", characters=characters, selected=selected, skilltree=sortedtree)
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
