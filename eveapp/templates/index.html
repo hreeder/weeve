@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Welcome{% endblock %}
+{% block title %}{% if selected.name %}{{ selected.name }}{% else %}Main{% endif %}{% endblock %}
 {% block main %}
 	<div class="row">
 		<div class="col-lg-3">
@@ -36,10 +36,12 @@
 			<section id="skill-sheet">
 				<h3>Skill Sheet</h3>
 				{% for group in skilltree %}{% if group.show %}
-				    <b>{{ group.name }}</b> - {{ group.count }} skills trained for {{ group.sp|sp() }} SP<br />
+				    <span id="{{ group.name }}-control" class="tippy" data-original-title="Click to expand skills" data-placement="left" data-toggle="collapse" data-target="#{{ group.id }}-group"><b>{{ group.name }}</b> - {{ group.count }} skills trained for {{ group.sp|sp() }} SP</span><br />
+				        <table id="{{ group.id }}-group" class="collapse table table-striped" style="width:100%; margin-bottom:0px;">
 				        {% for skill in group.skills %}
-				            {{ skill.name }} {{ skill.level|skill() }}<span class="pull-right">{{ skill.sp|sp() }} SP</span><br />
+				            <tr><td>{{ skill.name }} {{ skill.level|skill() }}</td><td><span class="pull-right">Rank {{ skill.rank }} - {{ skill.sp|sp() }}/{{ skill.rank|totalsp() }} SP</span></td>
 				        {% endfor %}
+					</table>
 				{% endif %}{% endfor %}
 			</section>
 		{% endif %}

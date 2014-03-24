@@ -43,3 +43,7 @@ div.danger {
 	-moz-border-radius: 10px;
 	border-radius: 10px;
 }
+
+.skill {
+        padding-left: 1em;
+}
