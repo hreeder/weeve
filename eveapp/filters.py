@@ -10,9 +10,14 @@ def format_currency(value):
 def format_sp(value):
     return "{:,}".format(value)
 
+@app.template_filter('totalsp')
+def format_totalsp(value):
+    totalsp = 256000 * value
+    return "{:,}".format(totalsp)
+
 @app.template_filter('skill')
 def format_skill(value):
-    if value == "0":
+    if value == "0" or value == None or value == 0:
         return "0"
     elif value == 1:
         return "I"
@@ -24,6 +29,8 @@ def format_skill(value):
         return "IV"
     elif value == 5:
         return "V"
+    else:
+        return value
 
 @app.template_filter('itemname')
 def format_item(value):
