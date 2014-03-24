@@ -28,6 +28,7 @@ def index(charid=0):
     selected = None
     eve = evelink.eve.EVE()
     tree = eve.skill_tree().result
+    sortedtree = ()
     if keys:
         for key in keys:
             api = evelink.api.API(api_key=(key.id, key.vcode))
@@ -85,11 +86,12 @@ def index(charid=0):
                     stree[group]['skills'][skill]['sp'] = selected_skill['skillpoints']
                     stree[group]['sp'] += selected_skill['skillpoints']
                     stree[group]['count'] += 1
+                    stree[group]['skills'][skill]['rank'] = tree[group]['skills'][skill]['rank']
             stree[group]['skills'] = sorted(stree[group]['skills'].itervalues(), key=operator.itemgetter('name'))
+        sortedtree = sorted(stree.itervalues(), key=operator.itemgetter('name'))
     else:
         flash('You do not currently have any API keys in Weeve. Please add these on your profile.')
 
-    sortedtree = sorted(stree.itervalues(), key=operator.itemgetter('name'))
     return render_template("index.html", characters=characters, selected=selected, skilltree=sortedtree)
 
 @app.route('/profile', methods=['GET', 'POST'])
