@@ -45,7 +45,7 @@ def format_time(value):
     return time.strftime("%a %d %b - %H:%M EvE")
 
 @app.template_filter('timeuntil')
-def format_until(value):
+def format_until(value, seconds=True):
     finish = datetime.datetime.utcfromtimestamp(value)
     now = datetime.datetime.utcnow()
     diff = finish - now
@@ -67,7 +67,7 @@ def format_until(value):
     # Take that number of minutes away from our seconds
     s = s - (m*60)
     # Append the remainder
-    if s:
+    if s and seconds:
         out.append("%ds" % (int(s)))
     # Join the list together for nice formatting
     return " ".join(out)

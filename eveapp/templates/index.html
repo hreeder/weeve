@@ -11,7 +11,7 @@
 						<img class="char-list-img" src="//image.eveonline.com/Character/{{ character.id }}_50.jpg">
 						<span class="charname">{{ character.name }}</span><br />
 						<small class="char-skill">{% if character.current_skill %}{{ character.current_skill|itemname() }} {{ character.current_level|skill() }}{% else %}{% endif %}</small><br />
-						{% if character.current_skill %}<span class="countdown">{{ character.current_finishes|timeuntil() }}</span>{% else %}No Skill In Training{% endif %}
+						{% if character.current_skill %}<span class="countdown">{{ character.current_finishes|timeuntil() }}</span>{% if character.current_finishes < character.queue_fin %}<br /><small>(<abbr title="Queue ends in {{ character.queue_fin|timeuntil() }}">{{ character.queue_fin|timeuntil() }}</abbr>)</small>{% endif %}{% else %}No Skill In Training{% endif %}
 					</h5>
 				</div>
 				</a>
@@ -38,6 +38,7 @@
 				  <div class="progress-bar progress-bar-danger" style="width:100%;">Empty</div>
 				  {% endif %}
 				</div>
+				{% if selected.current_skill %}Queue ends in {{ selected.queue_fin|timeuntil(False) }}{% endif %}
 			</section>
 			<section id="skill-sheet">
 				<h3>Skill Sheet</h3>

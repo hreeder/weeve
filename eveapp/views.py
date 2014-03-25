@@ -41,9 +41,12 @@ def index(charid=0):
                 ctrain = character.current_training().result
                 cqueue = character.skill_queue().result
                 queue_total = 0
+                queue_fin = 0
                 if ctrain['end_ts']:
                     for item in cqueue:
-                        queue_total += (item['end_ts'] - item['start_ts']) 
+                        queue_total += (item['end_ts'] - item['start_ts'])
+                        if item['end_ts'] > queue_fin:
+                            queue_fin = item['end_ts']
                 if ctrain['end_ts'] and int(ctrain['end_ts']) < int(datetime.datetime.utcnow().strftime('%s'))+86400000000:
                     training = True
                 characters.append({
@@ -60,7 +63,8 @@ def index(charid=0):
                     'current_finishes' : ctrain['end_ts'],
                     'skills' : csheet['skills'],
                     'queue' : cqueue,
-                    'queue_len' : queue_total
+                    'queue_len' : queue_total,
+                    'queue_fin' : queue_fin
                 })
             for character in characters:
                 if training and character['keyid']==key:
