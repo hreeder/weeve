@@ -103,7 +103,7 @@ def index(charid=0):
         sortedtree = sorted(stree.itervalues(), key=operator.itemgetter('name'))
     else:
         flash('You do not currently have any API keys in Weeve. Please add these on your profile.')
-    print selected
+
     return render_template("index.html", characters=characters, selected=selected, skilltree=sortedtree)
 
 @app.route('/profile', methods=['GET', 'POST'])
